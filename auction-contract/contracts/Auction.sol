@@ -42,6 +42,21 @@ contract Auction {
         _;
     }
 
+    modifier onlySeller(uint itemid) {
+        require(items[itemid].seller == msg.sender);
+        _;
+    }
+
+    modifier validPhase() {
+        require(state == Phase.Open);
+        _;
+    }
+
+    modifier validItemPhase(uint itemid) {
+        require(items[itemid].state == Phase.Open);
+        _;
+    }
+
     // Constructor and functions
     constructor(uint sellerJoinFee, uint sellerSellFeePercentage) {
         organizer = msg.sender;
@@ -62,6 +77,13 @@ contract Auction {
         require(msg.value == joinFee, "Value Sent Is Not Same As Join Fee!");
         require(price > 0, "Price Must Be More Than 0!");
         require(bidstep >= 0, "Bid Step Must Be 0 Or More!");
-        payable(organizer).transfer(msg.value);
+        // Check if item wasn't in sale already
+        items[itemid].seller = msg.sender;
+        items[itemid].bidStep = bidstep;
+        items[itemid].lastPrice = price;
+        // At start seller is winner
+        items[itemid].winner = msg.sender;
+        items[itemid].state = Phase.Open;
+        // payable(organizer).transfer(msg.value);
     }
 }

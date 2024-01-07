@@ -10,8 +10,8 @@ contract Auction {
 
     address organizer;
 
-    // Same Phase will be used for contract as well as item
-    enum Phase {Open,Stopped,Closed}
+    // Same Phase will be used for contract as well as item. Invalid for empty items.
+    enum Phase {Invalid,Open,Stopped,Closed}
     // Check conversion or floating point (this is not possible)!!!
     uint joinFee;
     uint sellFeePercentage;
@@ -28,9 +28,9 @@ contract Auction {
         uint bidStep;
         uint lastPrice;
         address winner;
-        mapping(address => Bidder) bidders;
+        // mapping(address => Bidder) bidders;
         // To get bidder info after stopping item sale or contract closing
-        address[] allBidders;
+        // address[] allBidders;
         Phase state;
     }
     mapping(uint => item) items;
@@ -43,7 +43,7 @@ contract Auction {
     }
 
     modifier onlySeller(uint itemid) {
-        require(items[itemid].seller == msg.sender);
+        require(items[itemid].seller == msg.sender, "Only Seller Of This Item Can Call This Function!");
         _;
     }
 
@@ -53,7 +53,7 @@ contract Auction {
     }
 
     modifier validItemPhase(uint itemid) {
-        require(items[itemid].state == Phase.Open);
+        require(items[itemid].state == Phase.Open, "Item Phase Is Closed And Function Cannot Be Called!");
         _;
     }
 
@@ -77,13 +77,51 @@ contract Auction {
         require(msg.value == joinFee, "Value Sent Is Not Same As Join Fee!");
         require(price > 0, "Price Must Be More Than 0!");
         require(bidstep >= 0, "Bid Step Must Be 0 Or More!");
-        // Check if item wasn't in sale already
+        // TODO: Check if item wasn't in sale already
         items[itemid].seller = msg.sender;
         items[itemid].bidStep = bidstep;
         items[itemid].lastPrice = price;
         // At start seller is winner
-        items[itemid].winner = msg.sender;
+        // items[itemid].winner = msg.sender;
         items[itemid].state = Phase.Open;
-        // payable(organizer).transfer(msg.value);
+        payable(organizer).transfer(msg.value);
+    }
+
+    // Returns true if there is a winner
+    function stopBidding(uint itemid) onlySeller(itemid) public returns(bool) {
+        require(items[itemid].state == Phase.Open, "Cannot Stop Bidding Because Item Is Not In Sale!");
+        items[itemid].state = Phase.Closed;
+        // Get money from winner and return money to loosers
+        if (items[itemid].winner == address(0)) {
+            return false;
+        }
+        // TODO: Fix FeePercentage out of 100 boundary
+        uint organizerFee = sellFeePercentage*items[itemid].lastPrice/100;
+        payable(organizer).transfer(organizerFee);
+        // items[itemid].lastPrice -= organizerFee;
+        payable(items[itemid].seller).transfer(items[itemid].lastPrice - organizerFee);
+        return true;
+    }
+
+    function getWinner(uint itemid) public view returns(address) {
+        return items[itemid].winner;
+    }
+
+    function getLastPrice(uint itemid) public view returns(uint) {
+        return items[itemid].lastPrice;
+    }
+
+    function getBidStep(uint itemid) public view returns(uint) {
+        return items[itemid].bidStep;
+    }
+
+    function bid(uint itemid) public payable {
+        require(items[itemid].state == Phase.Open, "Item Is Not On Sale!");
+        require(items[itemid].bidStep <= msg.value - items[itemid].lastPrice, "Bid Step Is Higher Than Bidding!");
+        if (items[itemid].winner != address(0)) {
+            payable(items[itemid].winner).transfer(items[itemid].lastPrice);
+        }
+        items[itemid].lastPrice = msg.value;
+        items[itemid].winner = msg.sender;
     }
 }

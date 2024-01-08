@@ -12,7 +12,6 @@ contract Auction {
 
     // Same Phase will be used for contract as well as item. Invalid for empty items.
     enum Phase {Invalid,Open,Stopped,Closed}
-    // Check conversion or floating point (this is not possible)!!!
     uint joinFee;
     uint sellFeePercentage;
     Phase state = Phase.Open;
@@ -47,8 +46,8 @@ contract Auction {
         _;
     }
 
-    modifier validPhase() {
-        require(state == Phase.Open);
+    modifier validPhase(Phase requiredPhase) {
+        require(state == requiredPhase);
         _;
     }
 
@@ -59,6 +58,7 @@ contract Auction {
 
     // Constructor and functions
     constructor(uint sellerJoinFee, uint sellerSellFeePercentage) {
+        require(0 <= sellerSellFeePercentage && sellerSellFeePercentage <= 100, "Sell Fee Percentage Wrong!");
         organizer = msg.sender;
         joinFee = sellerJoinFee;
         sellFeePercentage = sellerSellFeePercentage;
@@ -69,38 +69,54 @@ contract Auction {
         state = p;
     }
 
-    function stopJoining() onlyOrganizer public {
+    function stopJoining() onlyOrganizer validPhase(Phase.Open) public {
         changeState(Phase.Stopped);
     }
 
-    function addItem(uint itemid, uint price, uint bidstep) payable public {
+    function closeItemBidding(uint itemid) private returns (bool) {
+        items[itemid].state = Phase.Closed;
+        if (items[itemid].winner == address(0)) {
+            return false;
+        }
+        uint organizerFee = sellFeePercentage*items[itemid].lastPrice/100;
+        payable(organizer).transfer(organizerFee);
+        // items[itemid].lastPrice -= organizerFee;
+        payable(items[itemid].seller).transfer(items[itemid].lastPrice - organizerFee);
+        return true;
+    }
+
+    function closeContract() onlyOrganizer public {
+        require(state != Phase.Closed);
+        // Iterate through items, change their phase and transfer money
+        for (uint i = 0; i < allItems.length; i++) 
+        {
+            if (items[allItems[i]].state != Phase.Closed) {
+                closeItemBidding(allItems[i]);
+            }
+        }
+        state = Phase.Closed;
+    }
+
+    function addItem(uint itemid, uint price, uint bidstep) validPhase(Phase.Open) payable public {
         require(msg.value == joinFee, "Value Sent Is Not Same As Join Fee!");
         require(price > 0, "Price Must Be More Than 0!");
         require(bidstep >= 0, "Bid Step Must Be 0 Or More!");
-        // TODO: Check if item wasn't in sale already
+        // Check if item wasn't in sale already
+        require(items[itemid].state == Phase.Invalid, "Item Already Exists!");
         items[itemid].seller = msg.sender;
         items[itemid].bidStep = bidstep;
         items[itemid].lastPrice = price;
         // At start seller is winner
         // items[itemid].winner = msg.sender;
         items[itemid].state = Phase.Open;
+        allItems.push(itemid);
         payable(organizer).transfer(msg.value);
     }
 
     // Returns true if there is a winner
     function stopBidding(uint itemid) onlySeller(itemid) public returns(bool) {
         require(items[itemid].state == Phase.Open, "Cannot Stop Bidding Because Item Is Not In Sale!");
-        items[itemid].state = Phase.Closed;
-        // Get money from winner and return money to loosers
-        if (items[itemid].winner == address(0)) {
-            return false;
-        }
-        // TODO: Fix FeePercentage out of 100 boundary
-        uint organizerFee = sellFeePercentage*items[itemid].lastPrice/100;
-        payable(organizer).transfer(organizerFee);
-        // items[itemid].lastPrice -= organizerFee;
-        payable(items[itemid].seller).transfer(items[itemid].lastPrice - organizerFee);
-        return true;
+        return closeItemBidding(itemid);
     }
 
     function getWinner(uint itemid) public view returns(address) {

@@ -1,0 +1,15 @@
+{
+  "name": "auction-contract",
+  "version": "1.0.0",
+  "description": "Auction Smart Contract",
+  "main": "truffle-config.js",
+  "scripts": {
+    "compile": "truffle compile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mārtiņš Kristaps Mickus",
+  "license": "ISC",
+  "dependencies": {
+    "truffle": "^5.11.5"
+  }
+}

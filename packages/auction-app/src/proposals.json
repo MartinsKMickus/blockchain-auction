@@ -1,0 +1,37 @@
+[
+    {
+      "id": 0,
+      "name": "Jaguar I-Pace",
+      "picture": "images/Jaguar_I-Pace.jpg"
+    },
+    {
+      "id": 1,
+      "name": "Alpine A110",
+      "picture": "images/Alpine_A110.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Kia Ceed",
+      "picture": "images/Kia_Ceed.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Ford Focus",
+      "picture": "images/Ford_Focus.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Citroën C5 Aircross",
+      "picture": "images/Citroen_C5_Aircross.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Peugeot 508",
+      "picture": "images/Peugeot_508.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Mercedes-Benz A-Class",
+      "picture": "images/Mercedes-Benz_A200.jpg"
+    }
+  ]

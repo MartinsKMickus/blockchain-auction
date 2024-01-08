@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 /** 
  * @title Auction
- * @dev Implements voting process along with vote delegation
+ * @dev Implements auction process
  */
 contract Auction {
 

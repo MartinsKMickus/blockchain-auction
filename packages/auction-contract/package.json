@@ -4,6 +4,7 @@
   "description": "Auction Smart Contract",
   "main": "truffle-config.js",
   "scripts": {
+    "migrate": "npx truffle migrate",
     "compile": "truffle compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -9,8 +9,11 @@
     <title>Auction House</title>
 
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -25,20 +28,35 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-sm-push-2">
+                <h4 id="address_welcome" class="text-center">Connect wallet to begin</h4>
                 <h1 class="text-center">Choose Item To Bid On</h1>
                 <hr />
                 <br />
             </div>
         </div>
 
-        <div id="proposalsRow" class="row">
-            itemsRow
+        <div id="itemsRow" class="row">
         </div>
     </div>
 
     <div id="proposalTemplate" style="display: none;">
-        <div class="col-sm-8 col-md-2 col-lg-3">
-            <div class="panel panel-default panel-proposal">
+        <div class="card" style="width: 18rem;">
+            <img src="" class="card-img-top" alt="140x140">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <!-- <p class="card-text">Info</p> -->
+              <!-- <button href="#" class="button-type-bid btn btn-primary">Bid</button> -->
+              <div class="input-group mb-3">
+                <input type="number" min="0" class="form-control" placeholder="Wei's">
+                <div class="input-group-append">
+                  <button class="button-type-bid btn btn-primary" type="button">Bid</button>
+                </div>
+              </div>
+              <button href="#" class="btn btn-danger">Stop Bidding</button>
+            </div>
+          </div>
+        <!-- <div class="col-sm-8 col-md-2 col-lg-3">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title" style="text-align:center"></h3>
                 </div>
@@ -47,15 +65,16 @@
                         style="width: 230px; height: 130px;" src="images/Milli.png" data-holder-rendered="true">
                     <br /><br />
                     <div class="col-md-12 text-center">
+                        <button class="btn btn-info" type="button" id="startreg">Bid</button>
                         <input type="text" name="votecnt" id="0">
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <div class="container">
-        <div class="row" id="address_div">
+        <!-- <div class="row" id="address_div">
             <div style="margin-left: 15px;margin-top: 10px;">
                 <span> Address : </span>
                 <select id="enter_address" value=""></select>
@@ -65,7 +84,7 @@
         <br>
         <div class="row" id="startreg_div">
             <div style="margin-left: 15px;">
-                <button class="btn btn-info" type="button" id="startreg">Strart Registering</button>
+                <p> Nothing </p>
             </div>
         </div>
         <div class="row" id="startvote_div">
@@ -93,10 +112,21 @@
         <button class="btn btn-success" type="button" id="preResults">Preliminary Results</button>
         <br>
         <input type="text" name="finNr" id="finNr">
-        <button class="btn btn-success" type="button" id="finalResults">Final Results</button>
+        <button class="btn btn-success" type="button" id="finalResults">Final Results</button> -->
+        <br>
+        <form>
+            <div class="form-group">
+              <label for="exampleFormControlFile1">Item Image</label>
+              <input type="file" class="form-control-file" id="exampleFormControlFile1">
+              <input class="form-control" type="text" placeholder="Item Name">
+              <button type="button" class="btn btn-success" id="addItem">Add Item</button>
+            </div>
+          </form>
         <br>
         <div class="row" id="register_div">
             <div style="margin-left: 15px;">
+                <input type="text" name="joiningFee" id="joiningFee">
+                <input type="text" name="sellFee" id="sellFee">
                 <button class="btn btn-info" type="button" id="register">Register</button>
             </div>
         </div>

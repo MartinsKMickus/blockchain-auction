@@ -1,4 +1,222 @@
 
+class AuctionApp {
+    constructor() {
+        // Initialize variables
+        this.blockchainUrl = 'http://127.0.0.1:7545'; // Blockchain node URL
+        this.abi = null; // Contract ABI (Application Binary Interface)
+        this.contractAddress = null; // Contract address on the blockchain
+        this.contract = null;
+        this.joinFee = 1000000;
+        this.contracts = {}; // Object to store deployed contract instances
+        this.names = []; // Array to store auction names
+        this.organizer = null; // Organizer for the auction
+        this.currentAccount = null; // Current user's account
+        // console.log("Trying to get provider");
+        this.provider = this.getDefaultWeb3Provider(); // Web3 provider (e.g., MetaMask)
+        // .then((provider) => {
+        // this.web3Provider = provider;
+        // Initialize Web3 and contract
+        this.initEthereum();
+        this.initContract();
+        this.bindEvents();
+        this.getAuctionItems();
+        // }); 
+    }
+
+    // Not used???
+    getDefaultWeb3Provider() {
+        // Implement logic to determine the default Web3 provider
+        // For example, check if MetaMask is available and use it
+        // Otherwise, use a default provider or prompt the user to install MetaMask
+        if (typeof ethereum !== 'undefined') {
+            console.log("Ethereum object is already initialized!");
+            return ethereum;
+        } else if (typeof web3 !== 'undefined') { // TODO: Fix by removing?
+            console.log("Web3 is already initialized!");
+            this.web3 = web3;
+            return web3.currentProvider;
+        } else {
+            console.warn("Web3 is NOT initialized in browser!");
+            this.web3 = new Web3(this.blockchainUrl);
+            return new Web3.providers.HttpProvider(this.blockchainUrl); // USELESS
+        }
+    }
+
+    async fetchContractABI() {
+        // Implement logic to fetch or determine the contract ABI dynamically
+        // For example, make an API request to fetch the ABI from a server
+        return '...'; // Default or dynamically determined ABI
+    }
+
+    async determineContractAddress() {
+        // Implement logic to determine the contract address dynamically
+        // For example, prompt the user for the contract address or fetch it from a server
+        return '...'; // Default or dynamically determined contract address
+    }
+
+    async initEthereum() {
+        try {
+
+            // Get the current user's account
+            // const accounts = await this.web3.eth.getAccounts();
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            // console.log("Accounts: ", accounts);
+            this.currentAccount = accounts[0];
+            document.getElementById("address_welcome").textContent = "Welcome! " + this.currentAccount;
+
+            // TODO: Implement watch for account changes
+            // this.web3.currentProvider.on('accountsChanged', (newAccounts) => {
+            //     this.currentAccount = newAccounts[0];
+            //     document.getElementById("address_welcome").textContent = "Welcome! " + this.currentAccount;
+            //     // Perform any necessary updates when the account changes
+            // });
+
+        } catch (error) {
+            console.error('Error initializing Web3:', error);
+        }
+    }
+
+    async initContract() {
+        try {
+            fetch('Auction.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Auction.json Unreachable!');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // console.log(data);
+                    var voteArtifact = data;
+                    this.abi = voteArtifact.abi;
+                    this.contract = TruffleContract(voteArtifact);
+                    // Set the provider for our contract
+                    this.contract.setProvider(ethereum);
+                })
+        } catch (error) {
+            console.error('Error initializing contract:', error);
+        }
+    }
+
+    async bindEvents() {
+        // $(document).on('click', '#register', App.handleRegister);
+        document.addEventListener('click', (event) => {
+            // Check if the clicked element has the id 'register'
+            if (event.target.id === 'register') {
+                // Call the handleRegister function
+                this.handleRegister();
+            }
+            if (event.target.classList.contains('button-type-bid')) {
+                var dataId = event.target.getAttribute('data-id');
+
+                // Check if dataId is not null or undefined before proceeding
+                if (dataId !== null && dataId !== undefined) {
+                    // Convert dataId to a number if needed
+                    var numericDataId = parseInt(dataId, 10);
+                    console.log('Clicked button with data-id:', numericDataId);
+                    var inputElement = document.querySelector(`[data-id="${numericDataId}"]`);
+                    if (inputElement) {
+                        // Get the value of the input field
+                        var inputValue = inputElement.value;
+                        this.handleBidding(numericDataId, inputValue);
+                    } else {
+                        alert('Input element not found. Call developers!');
+                    }
+                    
+                    // Call the handleRegister function
+                } else {
+                    alert('Something went wrong! Please reload the page!');
+                }
+            }
+            if (event.target.id === 'addItem') {
+                // TODO: Replace with actual variables
+                this.handleAddItem(0, 10000000, 500000);
+            }
+        });
+    }
+
+    // Add methods for interacting with the contract and managing the auction
+
+    // Example method to get auction names
+    async getAuctionItems() {
+        try {
+            fetch('../items.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Auction.json Unreachable!');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var proposalsRow = document.getElementById('itemsRow');
+                    var proposalTemplate = document.getElementById('proposalTemplate');
+
+                    for (var i = 0; i < data.length; i++) {
+                        // Clone the template content
+                        var template = document.createElement('template');
+                        template.innerHTML = proposalTemplate.innerHTML;
+
+                        // Update the cloned template content with data
+                        template.content.querySelector('.card-title').textContent = "ID: " + data[i].id + " " + data[i].name;
+                        template.content.querySelector('img').setAttribute('src', data[i].picture);
+                        template.content.querySelector('.btn').setAttribute('data-id', i.toString(10));
+                        template.content.querySelector('input').setAttribute('data-id', i.toString(10));
+
+                        // Append the cloned template to the proposalsRow
+                        proposalsRow.appendChild(template.content);
+
+                        // Push the name to the App.names array
+                        App.names.push(data[i].name);
+                    }
+                })
+        } catch (error) {
+            console.error('Error getting auction names:', error);
+            return [];
+        }
+    }
+
+    async handleRegister() {
+        try {
+            // const gasEstimate = await this.contract.new.estimateGas(1000000, 10);
+
+            // console.log(gasEstimate);
+            // Deploy the contract
+            const deployedContract = await this.contract.new(1000000, 10, { from: this.currentAccount });
+
+            // Retrieve the deployed contract address
+            this.contractAddress = deployedContract.address;
+            console.log("Contract deployed at:", this.contractAddress);
+            console.log("Contract Instance:", deployedContract);
+
+        } catch (error) {
+            console.error('Error deploying contract:', error);
+        }
+        return
+    }
+
+    async handleBidding(itemid, bidvalue) {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            contractInstance.bid(itemid, { from: this.currentAccount, value: bidvalue });
+        } catch (error) {
+            console.error('Error while trying to bid:', error);
+        }
+        return
+    }
+
+    async handleAddItem(itemid, price, bidstep) {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            contractInstance.addItem(itemid, price, bidstep, { from: this.currentAccount, value: this.joinFee });
+        } catch (error) {
+            console.error('Error while trying to add item:', error);
+        }
+        return
+    }
+}
+
 App = {
     web3Provider: null,
     abi: null,
@@ -28,38 +246,41 @@ App = {
         // Is there is an injected web3 instance?
         if (typeof web3 !== 'undefined') {
             App.web3Provider = web3.currentProvider;
+            console.log("Web3 provider is current provider");
         } else {
             // If no injected web3 instance is detected, fallback to the TestRPC
             App.web3Provider = new Web3.providers.HttpProvider(App.url);
+            console.log("Web3 provider is new HTTP provider");
         }
-        web3 = new Web3(App.web3Provider);
+        // web3 = new Web3(App.web3Provider);
 
         ethereum.enable();
 
         App.populateAddress();
+
         return App.initContract();
     },
 
     initContract: function () {
         fetch('Auction.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Auction.json Unreachable!');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // console.log(data);
-            var voteArtifact = data;
-            App.abi = voteArtifact.abi;
-            App.contracts.vote = TruffleContract(voteArtifact);
-            // Set the provider for our contract
-            App.contracts.vote.setProvider(App.web3Provider);
-            return App.bindEvents();
-        })
-        .catch(error => {
-            console.error("Fetch error:", error);
-        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Auction.json Unreachable!');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // console.log(data);
+                var voteArtifact = data;
+                App.abi = voteArtifact.abi;
+                App.contracts.vote = TruffleContract(voteArtifact);
+                // Set the provider for our contract
+                App.contracts.vote.setProvider(App.web3Provider);
+                return App.bindEvents();
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            })
         // $.getJSON('Auction.json', function (data) {
         //     // Get the necessary contract artifact file and instantiate it with truffle-contract
         //     var voteArtifact = data;
@@ -84,22 +305,23 @@ App = {
         // $(document).on('click', '#endvote', App.handleEndVote);
         // $(document).on('click', '#state', App.handleGetState);
     },
-    
+
     // Populates address list
     populateAddress: function () {
-        const web3 = new Web3(new Web3.providers.HttpProvider(App.url));
+        // const web3 = new Web3(new Web3.providers.HttpProvider(App.url));
         web3.eth.getAccounts()
-        .then(accounts => {
-            // console.log(data);
-            accounts.forEach(function (account) {
-                // if (web3.eth.coinbase !== account) {
+            .then(accounts => {
+                console.log(web3);
+                accounts.forEach(function (account) {
+                    // if (web3.eth.coinbase !== account) {
                     var optionElement = document.createElement('option');
                     optionElement.value = account;
                     optionElement.textContent = account;
                     document.getElementById('enter_address').appendChild(optionElement);
-                // }
+                    // }
+                });
             });
-        });
+        console.log("Adresses are populated");
     },
 
     // getChairperson: function () {
@@ -119,7 +341,7 @@ App = {
     // },
 
     handleRegister: async function (addr) {
-        
+
         const accounts = await web3.eth.getAccounts();
         // console.log(App.accounts);
         return
@@ -271,8 +493,17 @@ App = {
 
 };
 
-$(function () {
-    $(window).load(function () {
-        App.init();
+// jQuery way:
+// $(function () {
+//     $(window).load(function () {
+//         App.init();
+//     });
+// });
+
+// Pure JavaScript way:
+document.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('load', function () {
+        const _ = new AuctionApp();
+        console.log("Page loaded! Loading Auction App!");
     });
 });

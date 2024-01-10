@@ -47,10 +47,22 @@
               <!-- <p class="card-text">Info</p> -->
               <!-- <button href="#" class="button-type-bid btn btn-primary">Bid</button> -->
               <div class="input-group mb-3">
-                <input type="number" min="0" class="form-control" placeholder="Wei's">
+                <input type="number" min="0" class="bid-input form-control" placeholder="Wei's">
                 <div class="input-group-append">
                   <button class="button-type-bid btn btn-primary" type="button">Bid</button>
                 </div>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-append">
+                  <button class="button-type-get-price btn btn-primary" type="button">Get Last Price</button>
+                </div>
+                <input class="price-output form-control" placeholder="Wei's" readonly>
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-append">
+                  <button class="button-type-get-bid-step btn btn-primary" type="button">Get Bid Step</button>
+                </div>
+                <input class="bid-step-output form-control" placeholder="Wei's" readonly>
               </div>
               <button href="#" class="btn btn-danger">Stop Bidding</button>
             </div>
@@ -127,7 +139,7 @@
             <div style="margin-left: 15px;">
                 <input type="text" name="joiningFee" id="joiningFee">
                 <input type="text" name="sellFee" id="sellFee">
-                <button class="btn btn-info" type="button" id="register">Register</button>
+                <button class="btn btn-info" type="button" id="register">Create Smart Contract</button>
             </div>
         </div>
     </div>

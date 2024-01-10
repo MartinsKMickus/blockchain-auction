@@ -29,14 +29,12 @@ class AuctionApp {
         // For example, check if MetaMask is available and use it
         // Otherwise, use a default provider or prompt the user to install MetaMask
         if (typeof ethereum !== 'undefined') {
-            console.log("Ethereum object is already initialized!");
+            console.log("Wallet is installed!");
             return ethereum;
-        } else if (typeof web3 !== 'undefined') { // TODO: Fix by removing?
-            console.log("Web3 is already initialized!");
-            this.web3 = web3;
-            return web3.currentProvider;
         } else {
-            console.warn("Web3 is NOT initialized in browser!");
+            console.warn("Wallet is not installed browser!");
+            document.documentElement.style.display = 'none';
+            alert("Please install browser wallet extension such as Coinbase (maybe MetaMask)");
             this.web3 = new Web3(this.blockchainUrl);
             return new Web3.providers.HttpProvider(this.blockchainUrl); // USELESS
         }
@@ -125,12 +123,37 @@ class AuctionApp {
                     
                     // Call the handleRegister function
                 } else {
-                    alert('Something went wrong! Please reload the page!');
+                    alert('Something went wrong! Call developers!');
                 }
             }
             if (event.target.id === 'addItem') {
                 // TODO: Replace with actual variables
                 this.handleAddItem(0, 10000000, 500000);
+            }
+            if (event.target.classList.contains('button-type-get-price')) {
+                var dataId = event.target.getAttribute('data-id');
+
+                // Check if dataId is not null or undefined before proceeding
+                if (dataId !== null && dataId !== undefined) {
+                    // Convert dataId to a number if needed
+                    var numericDataId = parseInt(dataId, 10);
+                    console.log('Clicked button with data-id:', numericDataId);
+                    var inputElement = document.querySelector(`[data-id="${numericDataId}"].price-output`);
+                    if (inputElement) {
+                        // Get the value of the input field
+                        // inputElement.value = 1000;
+                        this.handleGetLastPrice(numericDataId)
+                        .then(bidAmount => {
+                            inputElement.value = bidAmount;
+                        })
+                    } else {
+                        alert('Input element not found. Call developers!');
+                    }
+                    
+                    // Call the handleRegister function
+                } else {
+                    alert('Something went wrong! Call developers!');
+                }
             }
         });
     }
@@ -159,8 +182,12 @@ class AuctionApp {
                         // Update the cloned template content with data
                         template.content.querySelector('.card-title').textContent = "ID: " + data[i].id + " " + data[i].name;
                         template.content.querySelector('img').setAttribute('src', data[i].picture);
-                        template.content.querySelector('.btn').setAttribute('data-id', i.toString(10));
-                        template.content.querySelector('input').setAttribute('data-id', i.toString(10));
+                        var elementsForId = template.content.querySelectorAll('.btn, input');
+                        elementsForId.forEach(function (element) {
+                            element.setAttribute('data-id', i.toString(10))
+                        })
+                        // template.content.querySelector('.btn').setAttribute('data-id', i.toString(10));
+                        // template.content.querySelector('input').setAttribute('data-id', i.toString(10));
 
                         // Append the cloned template to the proposalsRow
                         proposalsRow.appendChild(template.content);
@@ -214,6 +241,17 @@ class AuctionApp {
             console.error('Error while trying to add item:', error);
         }
         return
+    }
+
+    async handleGetLastPrice(itemid) {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            return contractInstance.getLastPrice(itemid, { from: this.currentAccount });
+        } catch (error) {
+            console.error('Error while trying to bid:', error);
+        }
+        return "ERROR"
     }
 }
 
@@ -504,6 +542,5 @@ App = {
 document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('load', function () {
         const _ = new AuctionApp();
-        console.log("Page loaded! Loading Auction App!");
     });
 });

@@ -1,7 +1,22 @@
 [
     {
       "id": 0,
-      "name": "Jaguar I-Pace",
-      "picture": "images/Jaguar_I-Pace.jpg"
+      "name": "Dev Item A",
+      "picture": "images/dev_itemA.jpg"
+    },
+    {
+      "id": 1,
+      "name": "Dev Item B",
+      "picture": "images/dev_itemB.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Tool for Devs",
+      "picture": "images/tool_for_dev.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Something else for Devs",
+      "picture": "images/something_else_for_devs.jpg"
     }
   ]

@@ -130,15 +130,16 @@
             <div class="form-group">
               <label for="exampleFormControlFile1">Item Image</label>
               <input type="file" class="form-control-file" id="exampleFormControlFile1">
-              <input class="form-control" type="text" placeholder="Item Name">
+              <input class="form-control" type="text" placeholder="Item Name" id="item-id">
               <button type="button" class="btn btn-success" id="addItem">Add Item</button>
             </div>
           </form>
         <br>
+        <hr />
         <div class="row" id="register_div">
             <div style="margin-left: 15px;">
-                <input type="text" name="joiningFee" id="joiningFee">
-                <input type="text" name="sellFee" id="sellFee">
+                <input class="form-control" type="text" name="joiningFee" id="joiningFee" placeholder="Join Fee Wei's">
+                <input class="form-control" type="text" name="sellFee" id="sellFee" placeholder="Sell % Fee">
                 <button class="btn btn-info" type="button" id="register">Create Smart Contract</button>
             </div>
         </div>

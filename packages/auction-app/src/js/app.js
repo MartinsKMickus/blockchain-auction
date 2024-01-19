@@ -101,8 +101,12 @@ class AuctionApp {
         document.addEventListener('click', (event) => {
             // Check if the clicked element has the id 'register'
             if (event.target.id === 'register') {
+                var joinFee = document.getElementById("joiningFee").value;
+                var sellingFee = document.getElementById("sellFee").value;
+                console.log(joinFee);
+                console.log(sellingFee);
                 // Call the handleRegister function
-                this.handleRegister();
+                this.handleRegister(joinFee, sellingFee);
             }
             if (event.target.classList.contains('button-type-bid')) {
                 var dataId = event.target.getAttribute('data-id');
@@ -128,7 +132,8 @@ class AuctionApp {
             }
             if (event.target.id === 'addItem') {
                 // TODO: Replace with actual variables
-                this.handleAddItem(0, 10000000, 500000);
+                var itemId = document.getElementById("item-id").value;
+                this.handleAddItem(itemId, 10000000, 500000);
             }
             if (event.target.classList.contains('button-type-get-price')) {
                 var dataId = event.target.getAttribute('data-id');
@@ -143,6 +148,31 @@ class AuctionApp {
                         // Get the value of the input field
                         // inputElement.value = 1000;
                         this.handleGetLastPrice(numericDataId)
+                        .then(bidAmount => {
+                            inputElement.value = bidAmount;
+                        })
+                    } else {
+                        alert('Input element not found. Call developers!');
+                    }
+                    
+                    // Call the handleRegister function
+                } else {
+                    alert('Something went wrong! Call developers!');
+                }
+            }
+            if (event.target.classList.contains('button-type-get-bid-step')) {
+                var dataId = event.target.getAttribute('data-id');
+
+                // Check if dataId is not null or undefined before proceeding
+                if (dataId !== null && dataId !== undefined) {
+                    // Convert dataId to a number if needed
+                    var numericDataId = parseInt(dataId, 10);
+                    console.log('Clicked button with data-id:', numericDataId);
+                    var inputElement = document.querySelector(`[data-id="${numericDataId}"].bid-step-output`);
+                    if (inputElement) {
+                        // Get the value of the input field
+                        // inputElement.value = 1000;
+                        this.handleGetBidStep(numericDataId)
                         .then(bidAmount => {
                             inputElement.value = bidAmount;
                         })
@@ -202,13 +232,13 @@ class AuctionApp {
         }
     }
 
-    async handleRegister() {
+    async handleRegister(joinFee, sellFee) {
         try {
             // const gasEstimate = await this.contract.new.estimateGas(1000000, 10);
 
             // console.log(gasEstimate);
             // Deploy the contract
-            const deployedContract = await this.contract.new(1000000, 10, { from: this.currentAccount });
+            const deployedContract = await this.contract.new(joinFee, sellFee, { from: this.currentAccount });
 
             // Retrieve the deployed contract address
             this.contractAddress = deployedContract.address;
@@ -248,6 +278,16 @@ class AuctionApp {
             const contractInstance = await this.contract.at(this.contractAddress);
             // console.log(contractInstance);
             return contractInstance.getLastPrice(itemid, { from: this.currentAccount });
+        } catch (error) {
+            console.error('Error while trying to bid:', error);
+        }
+        return "ERROR"
+    }
+    async handleGetBidStep(itemid) {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            return contractInstance.getBidStep(itemid, { from: this.currentAccount });
         } catch (error) {
             console.error('Error while trying to bid:', error);
         }

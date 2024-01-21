@@ -41,116 +41,64 @@
 
     <div id="proposalTemplate" style="display: none;">
         <div class="card" style="width: 18rem;">
-            <img src="" class="card-img-top" alt="140x140">
+            <img src="" class="card-img-top" alt="Item Picture">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <!-- <p class="card-text">Info</p> -->
-              <!-- <button href="#" class="button-type-bid btn btn-primary">Bid</button> -->
-              <div class="input-group mb-3">
-                <input type="number" min="0" class="bid-input form-control" placeholder="Wei's">
-                <div class="input-group-append">
-                  <button class="button-type-bid btn btn-primary" type="button">Bid</button>
-                </div>
-              </div>
-              <div class="input-group mb-3">
-                <div class="input-group-append">
-                  <button class="button-type-get-price btn btn-primary" type="button">Get Last Price</button>
-                </div>
-                <input class="price-output form-control" placeholder="Wei's" readonly>
-              </div>
-              <div class="input-group mb-3">
-                <div class="input-group-append">
-                  <button class="button-type-get-bid-step btn btn-primary" type="button">Get Bid Step</button>
-                </div>
-                <input class="bid-step-output form-control" placeholder="Wei's" readonly>
-              </div>
-              <button href="#" class="btn btn-danger">Stop Bidding</button>
-            </div>
-          </div>
-        <!-- <div class="col-sm-8 col-md-2 col-lg-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title" style="text-align:center"></h3>
-                </div>
-                <div class="panel-body">
-                    <img alt="140x140" data-src="holder.js/170x170" class="img-rounded img-center"
-                        style="width: 230px; height: 130px;" src="images/Milli.png" data-holder-rendered="true">
-                    <br /><br />
-                    <div class="col-md-12 text-center">
-                        <button class="btn btn-info" type="button" id="startreg">Bid</button>
-                        <input type="text" name="votecnt" id="0">
+                <h5 class="card-title">Card title</h5>
+                <div class="input-group mb-3">
+                    <input type="number" min="0" class="bid-input form-control" placeholder="ETH">
+                    <div class="input-group-append">
+                        <button class="button-type-bid btn btn-primary" type="button">Bid</button>
                     </div>
                 </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="button-type-get-price btn btn-primary" type="button">Get Last Price</button>
+                    </div>
+                    <input class="price-output form-control" placeholder="ETH" readonly>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <button class="button-type-get-bid-step btn btn-primary" type="button">Get Bid Step</button>
+                    </div>
+                    <input class="bid-step-output form-control" placeholder="ETH" readonly>
+                </div>
+                <button href="#" class="button-type-stop-bid btn btn-danger">Stop Bidding</button>
+                <button href="#" class="button-type-get-winner btn btn-info">Get Winner</button>
             </div>
-        </div> -->
+        </div>
+        </div>
     </div>
 
     <div class="container">
-        <!-- <div class="row" id="address_div">
-            <div style="margin-left: 15px;margin-top: 10px;">
-                <span> Address : </span>
-                <select id="enter_address" value=""></select>
-            </div>
-        </div>
         <br>
-        <br>
-        <div class="row" id="startreg_div">
-            <div style="margin-left: 15px;">
-                <p> Nothing </p>
-            </div>
-        </div>
-        <div class="row" id="startvote_div">
-            <div style="margin-left: 15px;">
-                <button class="btn btn-info" type="button" id="startvote">Strart Voting</button>
-            </div>
-        </div>
-        <div class="row" id="endvote_div">
-            <div style="margin-left: 15px;">
-                <button class="btn btn-info" type="button" id="endvote">End Voting</button>
-            </div>
-        </div>
-        <br>
-        <div class="row" id="vote_div">
-            <div style="margin-left: 15px;">
-                <button class="btn btn-info" type="button" id="vote">Vote</button>
-            </div>
-        </div>
-
-        <br>
-        <button class="btn btn-success" type="button" id="state">Get State</button>
-        <br>
-        <br>
-        <input type="text" name="preNr" id="preNr">
-        <button class="btn btn-success" type="button" id="preResults">Preliminary Results</button>
-        <br>
-        <input type="text" name="finNr" id="finNr">
-        <button class="btn btn-success" type="button" id="finalResults">Final Results</button> -->
-        <br>
-        <form>
+        <form id="add_item_form" style="display: none;">
             <div class="form-group">
-              <label for="exampleFormControlFile1">Item Image</label>
-              <input type="file" class="form-control-file" id="exampleFormControlFile1">
-              <input class="form-control" type="text" placeholder="Item Name" id="item-id">
-              <button type="button" class="btn btn-success" id="addItem">Add Item</button>
+                <label for="itemImageFile">Item Image</label>
+                <input type="file" class="form-control-file" id="itemImageFile">
+                <input class="form-control" type="text" placeholder="Item Name" id="item-name-input">
+                <input class="form-control" type="number" placeholder="Item Price ETH" id="item-price-input">
+                <input class="form-control" type="number" placeholder="Item Bid Step ETH" id="item-bid-step-input">
+                <button type="button" class="btn btn-success" id="addItem">Add Item</button>
             </div>
-          </form>
+        </form>
         <br>
         <hr />
         <div class="row" id="register_div">
             <div style="margin-left: 15px;">
-                <input class="form-control" type="text" name="joiningFee" id="joiningFee" placeholder="Join Fee Wei's">
-                <input class="form-control" type="text" name="sellFee" id="sellFee" placeholder="Sell % Fee">
+                <input class="form-control" type="text" name="joiningFee" id="joiningFee" placeholder="Join Fee ETH">
+                <input class="form-control" type="text" name="sellFee" min="0" id="sellFee" placeholder="Sell % Fee">
                 <button class="btn btn-info" type="button" id="register">Create Smart Contract</button>
             </div>
         </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!-- <script src="js/dist/web3.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.2/web3.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@truffle/contract@4.6.31/index.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/truffle-contract@4.0.31/dist/truffle-contract.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/web3@4.3.0/lib/commonjs/web3.min.js"></script> -->
     <!-- <script src="js/dist/truffle-contract.js"></script> -->

@@ -66,7 +66,7 @@
                 <button href="#" class="button-type-get-winner btn btn-info">Get Winner</button>
             </div>
         </div>
-        </div>
+    </div>
     </div>
 
     <div class="container">
@@ -83,10 +83,15 @@
         </form>
         <br>
         <hr />
+        <div id="closeopenbuttons" style="display: none">
+            <button href="#" class="btn btn-warning" id="stopJoining">Stop Joining</button>
+            <button href="#" class="btn btn-danger" id="closeContract">Close Contract</button>
+        </div>
         <div class="row" id="register_div">
             <div style="margin-left: 15px;">
                 <input class="form-control" type="text" name="joiningFee" id="joiningFee" placeholder="Join Fee ETH">
-                <input class="form-control" type="text" name="sellFee" min="0" id="sellFee" placeholder="Sell % Fee">
+                <input class="form-control" type="text" name="sellFee" min="0" max="100" id="sellFee"
+                    placeholder="Sell % Fee">
                 <button class="btn btn-info" type="button" id="register">Create Smart Contract</button>
             </div>
         </div>

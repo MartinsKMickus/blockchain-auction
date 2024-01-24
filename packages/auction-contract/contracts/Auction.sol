@@ -47,7 +47,7 @@ contract Auction {
     }
 
     modifier validPhase(Phase requiredPhase) {
-        require(state == requiredPhase);
+        require(state == requiredPhase, "Current Contract State Is Wrong!");
         _;
     }
 

@@ -80,6 +80,7 @@ class AuctionApp {
                 console.log(`Contract join fee loaded: ${weiToEth(data.joinFee)}ETH`);
                 document.getElementById("register_div").style.display = 'none';
                 document.getElementById("add_item_form").style.display = '';
+                document.getElementById("closeopenbuttons").style.display = '';
                 // }
             })
         // .catch(error => {
@@ -144,6 +145,12 @@ class AuctionApp {
                 // Call the handleRegister function
                 this.handleRegister(joinFee, sellingFee);
             }
+            if (event.target.id === 'stopJoining') {
+                this.handleStopJoining();
+            }
+            if (event.target.id === 'closeContract') {
+                this.handleCloseContract();
+            }
             if (event.target.classList.contains('button-type-bid')) {
                 var dataId = event.target.getAttribute('data-id');
 
@@ -180,7 +187,10 @@ class AuctionApp {
                 console.log("Item name: ", itemName);
                 console.log("Item price: ", itemPrice);
                 console.log("Item bid step: ", itemBidStep);
-                this.handleAddItem(imageFile, itemName, itemPrice, itemBidStep);
+                this.handleAddItem(imageFile, itemName, itemPrice, itemBidStep)
+                .then(() => {
+                    location.reload();
+                })
             }
             if (event.target.classList.contains('button-type-get-price')) {
                 var dataId = event.target.getAttribute('data-id');
@@ -445,10 +455,10 @@ class AuctionApp {
                 .catch((error) => {
                     console.error('There was a problem with the fetch operation:', error);
                 });
-            location.reload();
 
         } catch (error) {
             console.error('Error while trying to add item:', error);
+            alert(`Adding item failed: ${error.message}`);
         }
         return
     }
@@ -492,6 +502,28 @@ class AuctionApp {
         } catch (error) {
             console.error('Error while trying to get winner:', error);
             alert(`Get winner fail: ${error.message}`);
+        }
+        return "ERROR"
+    }
+    async handleStopJoining() {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            await contractInstance.stopJoining({ from: this.currentAccount });
+        } catch (error) {
+            console.error('Error while trying to stop joining:', error);
+            alert(`Stop joining fail: ${error.message}`);
+        }
+        return "ERROR"
+    }
+    async handleCloseContract() {
+        try {
+            const contractInstance = await this.contract.at(this.contractAddress);
+            // console.log(contractInstance);
+            await contractInstance.closeContract({ from: this.currentAccount });
+        } catch (error) {
+            console.error('Error while trying to close contract:', error);
+            alert(`Close contract fail: ${error.message}`);
         }
         return "ERROR"
     }

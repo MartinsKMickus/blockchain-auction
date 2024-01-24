@@ -187,10 +187,7 @@ class AuctionApp {
                 console.log("Item name: ", itemName);
                 console.log("Item price: ", itemPrice);
                 console.log("Item bid step: ", itemBidStep);
-                this.handleAddItem(imageFile, itemName, itemPrice, itemBidStep)
-                .then(() => {
-                    location.reload();
-                })
+                this.handleAddItem(imageFile, itemName, itemPrice, itemBidStep);
             }
             if (event.target.classList.contains('button-type-get-price')) {
                 var dataId = event.target.getAttribute('data-id');
@@ -442,7 +439,7 @@ class AuctionApp {
                 // },
                 body: data, // Convert JSON data to a string
             };
-            fetch(url, options)
+            await fetch(url, options)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -451,6 +448,7 @@ class AuctionApp {
                 })
                 .then((data) => {
                     console.log('Response:', data); // Handle the response data
+                    location.reload();
                 })
                 .catch((error) => {
                     console.error('There was a problem with the fetch operation:', error);
